@@ -46,13 +46,15 @@ The FUNCTION will just be stored when the current `buffer-file-name' matches wit
   (puthash "test-suite-run-function" function tester--storage))
 
 (defun tester--store-test-file-run ()
+  "Store the informations from the last test file run."
+  (puthash "last-default-directory" default-directory tester--storage)
   (puthash "last-test-file" buffer-file-name tester--storage)
   (puthash "last-test-function" (gethash "test-run-function" tester--storage) tester--storage))
 
 (defun tester--store-test-file-run-p ()
-  "Store the informations from the last test file run."
   (and (gethash "last-test-file" tester--storage)
-       (gethash "last-test-function" tester--storage)))
+       (gethash "last-test-function" tester--storage)
+       (gethash "last-default-directory" tester--storage)))
 
 (defun tester--test-run-function ()
   "Return the current stored function which run the test file."
@@ -61,6 +63,10 @@ The FUNCTION will just be stored when the current `buffer-file-name' matches wit
 (defun tester--test-suite-run-function ()
   "Return the current stored function which run the test suite."
   (gethash "test-suite-run-function" tester--storage))
+
+(defun tester--last-default-directory ()
+  "Return the last stored default-directory."
+  (gethash "last-default-directory" tester--storage))
 
 (defun tester--last-test-function ()
   "Return the last stored function which run the test file."
@@ -80,15 +86,23 @@ Otherwise return nil."
   (and buffer-file-name
        (string-match (gethash "match" tester--storage) buffer-file-name)))
 
+(defun tester--execute-test-file (function file directory)
+  (let ((default-directory directory))
+    (funcall function file)))
+
 (defun tester-run-test-file ()
   "Run the current test file."
   (interactive)
   (cond ((and (tester--test-run-function)
               (tester--buffer-test-file-p))
          (tester--store-test-file-run)
-         (funcall (tester--test-run-function) buffer-file-name))
-        ((tester--store-test-file-run-p)
-         (funcall (tester--last-test-function) (tester--last-test-file)))
+         (tester--execute-test-file (tester--test-run-function)
+                                    buffer-file-name
+                                    default-directory))
+         ((tester--store-test-file-run-p)
+          (tester--execute-test-file (tester--last-test-function)
+                                     (tester--last-test-file)
+                                     (tester--last-default-directory)))
         (t
          (message "Please setup a function for running a test file."))))
 
