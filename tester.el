@@ -39,7 +39,7 @@
 
 ;;; Code:
 
-(defun tester (&rest cl-keys)
+(defun tester-init-test-run (&rest cl-keys)
   (cl--parsing-keywords ((:function nil) (:match nil)) nil
     (if (and buffer-file-name (string-match cl-match buffer-file-name))
         (setq tester--test-run-function cl-function)
@@ -53,7 +53,7 @@
   (and tester--last-test-file
        tester--last-test-function))
 
-(defun tester-run ()
+(defun tester-run-test-file ()
   (interactive)
   (cond (tester--test-run-function
          (tester--store-setup)
