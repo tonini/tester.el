@@ -22,7 +22,10 @@
         (t
          (message "Please setup a function for running tests."))))
 
-(defun tonini-elixir-setup-hook ()
-  (tester :function 'alchemist-mix-test-file :match "_test.exs"))
+;;
+;; Example usage:
+;;
+;; (defun custom-elixir-setup-hook ()
+;;   (tester :function 'alchemist-mix-test-file :match "_test.exs"))
 
-(add-hook 'elixir-mode-hook 'tonini-elixir-setup-hook)
+;; (add-hook 'elixir-mode-hook 'custom-elixir-setup-hook)
