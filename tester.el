@@ -39,15 +39,13 @@
 
 ;;; Code:
 
-(defun tester-init-test-run (&rest cl-keys)
-  (cl--parsing-keywords ((:function nil) (:match nil)) nil
-    (if (and buffer-file-name (string-match cl-match buffer-file-name))
-        (setq tester--test-run-function cl-function)
-      (setq tester--test-run-function nil))))
+(defun tester-init-test-run (function match)
+  (if (and buffer-file-name (string-match match buffer-file-name))
+      (setq tester--test-run-function function)
+    (setq tester--test-run-function nil)))
 
-(defun tester-init-test-suite-run (&rest cl-keys)
-  (cl--parsing-keywords ((:function nil)) nil
-    (setq tester--test-suite-run-function cl-function)))
+(defun tester-init-test-suite-run (function)
+  (setq tester--test-suite-run-function function))
 
 (defun tester--store-setup ()
   (setq tester--last-test-file buffer-file-name)
