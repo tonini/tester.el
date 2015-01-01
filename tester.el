@@ -45,6 +45,10 @@
         (setq tester--test-run-function cl-function)
       (setq tester--test-run-function nil))))
 
+(defun tester-init-test-suite-run (&rest cl-keys)
+  (cl--parsing-keywords ((:function nil)) nil
+    (setq tester--test-suite-run-function cl-function)))
+
 (defun tester--store-setup ()
   (setq tester--last-test-file buffer-file-name)
   (setq tester--last-test-function tester--test-run-function))
@@ -61,7 +65,17 @@
         ((tester--stored-setup-p)
          (funcall tester--last-test-function tester--last-test-file))
         (t
-         (message "Please setup a function for running tests."))))
+         (message "Please setup a function for running a test."))))
+
+(defun tester-run-test-suite ()
+  (interactive)
+  (cond (tester--test-suite-run-function
+         (setq tester--last-test-suite-function tester--test-suite-run-function)
+         (funcall tester--test-suite-run-function))
+        (tester--last-test-suite-function
+         (funcall tester--last-test-suite-function))
+        (t
+         (message "Please setup a function for running the test suite."))))
 
 (provide 'tester)
 
