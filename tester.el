@@ -39,39 +39,63 @@
 
 ;;; Code:
 
+(defvar tester--storage (make-hash-table :test 'equal)
+  "Hash table to store information about the last test run.")
+
 (defun tester-init-test-run (function match)
+  (puthash "match" match tester--storage)
   (if (and buffer-file-name (string-match match buffer-file-name))
-      (setq tester--test-run-function function)
-    (setq tester--test-run-function nil)))
+      (puthash "test-run-function" function tester--storage)
+    (puthash "test-run-function" nil tester--storage)))
 
 (defun tester-init-test-suite-run (function)
-  (setq tester--test-suite-run-function function))
+  (puthash "test-suite-run-function" function tester--storage))
 
-(defun tester--store-setup ()
-  (setq tester--last-test-file buffer-file-name)
-  (setq tester--last-test-function tester--test-run-function))
+(defun tester--store-test-file-run ()
+  (puthash "last-test-file" buffer-file-name tester--storage)
+  (puthash "last-test-function" (gethash "test-run-function" tester--storage) tester--storage))
 
-(defun tester--stored-setup-p ()
-  (and tester--last-test-file
-       tester--last-test-function))
+(defun tester--store-test-file-run-p ()
+  (and (gethash "last-test-file" tester--storage)
+       (gethash "last-test-function" tester--storage)))
+
+(defun tester--test-run-function ()
+  (gethash "test-run-function" tester--storage))
+
+(defun tester--test-suite-run-function ()
+  (gethash "test-suite-run-function" tester--storage))
+
+(defun tester--last-test-function ()
+  (gethash "last-test-function" tester--storage))
+
+(defun tester--last-test-suite-function ()
+  (gethash "last-test-suite-function" tester--storage))
+
+(defun tester--last-test-file ()
+  (gethash "last-test-file" tester--storage))
+
+(defun tester--buffer-test-file-p ()
+  (and buffer-file-name
+       (string-match (gethash "match" tester--storage) buffer-file-name)))
 
 (defun tester-run-test-file ()
   (interactive)
-  (cond (tester--test-run-function
-         (tester--store-setup)
-         (funcall tester--test-run-function buffer-file-name))
-        ((tester--stored-setup-p)
-         (funcall tester--last-test-function tester--last-test-file))
+  (cond ((and (tester--test-run-function)
+              (tester--buffer-test-file-p))
+         (tester--store-test-file-run)
+         (funcall (tester--test-run-function) buffer-file-name))
+        ((tester--store-test-file-run-p)
+         (funcall (tester--last-test-function) (tester--last-test-file)))
         (t
          (message "Please setup a function for running a test."))))
 
 (defun tester-run-test-suite ()
   (interactive)
-  (cond (tester--test-suite-run-function
-         (setq tester--last-test-suite-function tester--test-suite-run-function)
-         (funcall tester--test-suite-run-function))
-        (tester--last-test-suite-function
-         (funcall tester--last-test-suite-function))
+  (cond ((tester--test-suite-run-function)
+         (puthash "last-test-suite-function" (tester--test-suite-run-function) tester--storage)
+         (funcall (tester--test-suite-run-function)))
+        ((tester--last-test-suite-function)
+         (funcall (tester--last-test-suite-function)))
         (t
          (message "Please setup a function for running the test suite."))))
 
