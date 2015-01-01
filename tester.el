@@ -28,15 +28,6 @@
 
 ;;  Test interface for language specific test runs.
 
-;;
-;;  Example usage:
-;;
-;;  (defun custom-elixir-setup-hook ()
-;;    (tester :function 'alchemist-mix-test-file :match "_test.exs"))
-;;
-;;  (add-hook 'elixir-mode-hook 'custom-elixir-setup-hook)
-;;
-
 ;;; Code:
 
 (defvar tester--storage (make-hash-table :test 'equal)
