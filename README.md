@@ -49,3 +49,14 @@ Takes two arguments, the function which will be executed at test time and the id
 * `tester-init-test-suite-run`
 
 Takes just one argument, the function which will used to run the complete project based test suite.
+
+### Usage
+
+After you registered the functions you can just call `tester-run-test-file`. When you're in a prober buffer with a test file, the registered function will be called.
+
+The function `tester-run-test-suite` can be called from everywhere inside your project, you don't need to be in a buffer with a proper test file.
+
+### Additional functionality
+
+`tester` not just run your registered functions, it also stores them. So if you try to call for example `tester-run-test-file` in a buffer with doesn't contain a proper test file, it just calls
+the last stored test run. This brings a useful workflow, for example you can switch between a test file and the proper codebase and run the tests from both buffers.
