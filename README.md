@@ -31,7 +31,7 @@
   (tester-init-test-run #'overseer-test-file "test.el$")
   (tester-init-test-suite-run #'overseer-test))
 
-(add-hook 'emacs-lisp-mode-hook  'default-rubyemacs-lisp-mode-hook)
+(add-hook 'emacs-lisp-mode-hook  'default-emacs-lisp-mode-hook)
 ```
 
 To test the current file in the buffer, for example `person_management_spec.rb`, just run the function
