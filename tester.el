@@ -30,6 +30,8 @@
 
 ;;; Code:
 
+(require 'pkg-info)
+
 (defvar tester--storage (make-hash-table :test 'equal)
   "Hash table to store information about the last test run.")
 
@@ -116,6 +118,25 @@ Otherwise return nil."
          (funcall (tester--last-test-suite-function)))
         (t
          (message "Please setup a function for running the test suite."))))
+
+;;;###autoload
+(defun tester-version (&optional show-version)
+  "Get the Tester version as string.
+
+If called interactively or if SHOW-VERSION is non-nil, show the
+version in the echo area and the messages buffer.
+
+The returned string includes both, the version from package.el
+and the library version, if both a present and different.
+
+If the version number could not be determined, signal an error,
+if called interactively, or if SHOW-VERSION is non-nil, otherwise
+just return nil."
+  (interactive (list t))
+  (let ((version (pkg-info-version-info 'tester)))
+    (when show-version
+      (message "Tester version: %s" version))
+    version))
 
 (provide 'tester)
 
