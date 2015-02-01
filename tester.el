@@ -26,7 +26,7 @@
 
 ;;; Commentary:
 
-;;  Test interface for language specific test runs.
+;; Test interface for language specific test runs.
 
 ;;; Code:
 
