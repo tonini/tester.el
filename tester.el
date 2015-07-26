@@ -95,6 +95,7 @@ Otherwise return nil."
 (defun tester-run-test-file ()
   "Run the current test file."
   (interactive)
+  (call-interactively major-mode)
   (cond ((and (tester--test-run-function)
               (tester--buffer-test-file-p))
          (tester--store-test-file-run)
