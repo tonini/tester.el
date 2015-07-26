@@ -1,4 +1,4 @@
-;;; tester.el --- Test interface for language specific test runs.
+;;; tester.el --- Run all tests through the same function pipeline.
 
 ;; Copyright © 2015 Samuel Tonini
 ;;
@@ -26,7 +26,7 @@
 
 ;;; Commentary:
 
-;; Test interface for language specific test runs.
+;; Run all tests through the same function pipeline.
 
 ;;; Code:
 
