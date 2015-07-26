@@ -32,20 +32,12 @@
 
 (require 'pkg-info)
 
+;; Variables
+
 (defvar tester--storage (make-hash-table :test 'equal)
   "Hash table to store information about the last test run.")
 
-(defun tester-init-test-run (function match)
-  "Initialize the FUNCTION which will be used when `tester-run-test-file' is called.
-The FUNCTION will just be stored when the current `buffer-file-name' matches with MATCH."
-  (puthash "match" match tester--storage)
-  (if (and buffer-file-name (string-match match buffer-file-name))
-      (puthash "test-run-function" function tester--storage)
-    (puthash "test-run-function" nil tester--storage)))
-
-(defun tester-init-test-suite-run (function)
-  "Initialize the FUNCTION which will be used when `tester-run-test-suite' is called."
-  (puthash "test-suite-run-function" function tester--storage))
+;; Private functions
 
 (defun tester--store-test-file-run ()
   "Store the informations from the last test file run."
@@ -92,6 +84,39 @@ Otherwise return nil."
   (let ((default-directory directory))
     (funcall function file)))
 
+;; Public functions
+
+;;;###autoload
+(defun tester-version (&optional show-version)
+  "Get the Tester version as string.
+
+If called interactively or if SHOW-VERSION is non-nil, show the
+version in the echo area and the messages buffer.
+
+The returned string includes both, the version from package.el
+and the library version, if both a present and different.
+
+If the version number could not be determined, signal an error,
+if called interactively, or if SHOW-VERSION is non-nil, otherwise
+just return nil."
+  (interactive (list t))
+  (let ((version (pkg-info-version-info 'tester)))
+    (when show-version
+      (message "Tester version: %s" version))
+    version))
+
+(defun tester-init-test-run (function match)
+  "Initialize the FUNCTION which will be used when `tester-run-test-file' is called.
+The FUNCTION will just be stored when the current `buffer-file-name' matches with MATCH."
+  (puthash "match" match tester--storage)
+  (if (and buffer-file-name (string-match match buffer-file-name))
+      (puthash "test-run-function" function tester--storage)
+    (puthash "test-run-function" nil tester--storage)))
+
+(defun tester-init-test-suite-run (function)
+  "Initialize the FUNCTION which will be used when `tester-run-test-suite' is called."
+  (puthash "test-suite-run-function" function tester--storage))
+
 (defun tester-run-test-file ()
   "Run the current test file."
   (interactive)
@@ -119,25 +144,6 @@ Otherwise return nil."
          (funcall (tester--last-test-suite-function)))
         (t
          (message "Please setup a function for running the test suite."))))
-
-;;;###autoload
-(defun tester-version (&optional show-version)
-  "Get the Tester version as string.
-
-If called interactively or if SHOW-VERSION is non-nil, show the
-version in the echo area and the messages buffer.
-
-The returned string includes both, the version from package.el
-and the library version, if both a present and different.
-
-If the version number could not be determined, signal an error,
-if called interactively, or if SHOW-VERSION is non-nil, otherwise
-just return nil."
-  (interactive (list t))
-  (let ((version (pkg-info-version-info 'tester)))
-    (when show-version
-      (message "Tester version: %s" version))
-    version))
 
 (provide 'tester)
 
